@@ -1,0 +1,32 @@
+main {
+}
+.header {
+  background-color: blue;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+.header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+.header nav li {
+  display: inline-block;
+  margin: 0 10px;
+}
+.header nav a {
+  color: white;
+  text-decoration: none;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.event-grid img {
+  width: 100%;
+  height: auto;
+}
