@@ -205,3 +205,58 @@ button:hover {
 #login-button:hover {
   background-color: #c0392b;
 }
+
+/* About Us Page Styles */
+.about-intro {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.event-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.category {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.category h4 {
+  color: #2c3e50;
+  margin-top: 0;
+}
+
+.camden-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.highlight-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.highlight-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.highlight-card h4 {
+  margin: 1rem;
+  color: #2c3e50;
+}
+
+.highlight-card p {
+  margin: 0 1rem 1rem;
+  color: #666;
+}
