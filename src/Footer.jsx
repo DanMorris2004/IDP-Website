@@ -17,10 +17,6 @@ export default function Footer() {
             <i className="social-icon">📱</i> Instagram
           </a>
         </div>
-        <div className="footer-links">
-          <Link to="/contact">Contact Us</Link>
-          <Link to="/about-us">About Us</Link>
-        </div>
         <p className="copyright">© 2024 Camden Event Planner. All rights reserved.</p>
       </div>
     </footer>
