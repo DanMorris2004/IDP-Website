@@ -1,12 +1,9 @@
 // src/CreateAccountPage.jsx
 import './App.css'
 import { Link } from 'react-router-dom'
-import Header from './Header'
-
 export default function CreateAccountPage() {
   return (
     <>
-      <Header />
       <section id="create-account">
         <h2>Create Account</h2>
         <form>
