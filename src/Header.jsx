@@ -37,6 +37,7 @@ export default function Header() {
           <li><Link to="/create-event">Create Event</Link></li>
           <li><Link to="/login" id="login-button">Log In</Link></li>
           <li><Link to="/about-us">About Us</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
         </ul>
       </nav>
     </header>

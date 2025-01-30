@@ -7,6 +7,8 @@ import HomePage from './HomePage'
 import EventsPage from './EventsPage'
 import CreateEventPage from './CreateEventPage'
 import AboutUsPage from './AboutUsPage'
+import ContactPage from './ContactPage'
+import Footer from './Footer'
 
 export default function App() {
   return (
@@ -18,11 +20,13 @@ export default function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/about-us" element={<AboutUsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-account" element={<CreateAccountPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
       </main>
+      <Footer />
     </div>
   )
 }
