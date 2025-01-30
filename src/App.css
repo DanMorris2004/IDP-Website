@@ -325,13 +325,9 @@ button:hover {
   background-size: cover;
   background-position: center;
   color: white;
-  margin: -2rem calc(-50vw + 50%) 2rem;
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: calc(100% - 20px);
+  margin: 0 10px 2rem 10px;
+  border-radius: 8px;
 }
 
 .hero-section h1 {
@@ -437,13 +433,9 @@ button:hover {
   padding: 4rem 0;
   background: #f8f9fa;
   text-align: center;
-  margin: 2rem calc(-50vw + 50%);
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: calc(100% - 20px);
+  margin: 2rem 10px;
+  border-radius: 8px;
 }
 
 .testimonials-grid {
