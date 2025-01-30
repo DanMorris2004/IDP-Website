@@ -325,7 +325,13 @@ button:hover {
   background-size: cover;
   background-position: center;
   color: white;
-  margin: -2rem -2rem 2rem -2rem;
+  margin: -2rem calc(-50vw + 50%) 2rem;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .hero-section h1 {
@@ -431,7 +437,13 @@ button:hover {
   padding: 4rem 0;
   background: #f8f9fa;
   text-align: center;
-  margin: 2rem -2rem;
+  margin: 2rem calc(-50vw + 50%);
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .testimonials-grid {
