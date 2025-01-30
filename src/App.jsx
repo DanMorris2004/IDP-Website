@@ -10,8 +10,9 @@ import AboutUsPage from './AboutUsPage'
 
 export default function App() {
   return (
-    <main>
+    <div className="app-container">
       <Header />
+      <main>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<EventsPage />} />
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/create-account" element={<CreateAccountPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
-    </main>
+      </main>
+    </div>
   )
 }
