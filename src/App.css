@@ -12,6 +12,9 @@ body {
 main {
   flex: 1;
   padding: 20px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .header {
@@ -79,12 +82,13 @@ main {
 
 section {
   max-width: 1200px;
-  width: 90%;
+  width: 95%;
   margin: 2rem auto;
   padding: 2rem;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
