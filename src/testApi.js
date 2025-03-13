@@ -6,21 +6,39 @@ const testApiConnection = async () => {
   try {
     console.log('Testing API connection...');
     
-    // Test the server connection
-    const testResponse = await fetch('http://0.0.0.0:3000/api/test');
-    if (!testResponse.ok) {
-      console.error('Server test failed:', testResponse.status, testResponse.statusText);
-      console.log('Response:', await testResponse.text());
-      return;
+    // Test the server connection with more detailed logging
+    console.log('1. Testing basic server connection');
+    const serverUrl = 'http://0.0.0.0:3000/api/test';
+    console.log(`   Sending request to: ${serverUrl}`);
+    
+    try {
+      const testResponse = await fetch(serverUrl);
+      console.log(`   Response status: ${testResponse.status}`);
+      
+      const responseText = await testResponse.text();
+      console.log(`   Response body: ${responseText}`);
+      
+      if (responseText) {
+        try {
+          const testData = JSON.parse(responseText);
+          console.log('   Parsed JSON response:', testData);
+        } catch (jsonError) {
+          console.error('   Failed to parse JSON:', jsonError.message);
+        }
+      } else {
+        console.error('   Empty response received');
+      }
+    } catch (serverError) {
+      console.error('   Server connection error:', serverError.message);
     }
     
-    const testData = await testResponse.json();
-    console.log('Server test response:', testData);
+    // Test the auth endpoint
+    console.log('\n2. Testing auth endpoint');
+    const authUrl = 'http://0.0.0.0:3000/auth/login';
+    console.log(`   Sending request to: ${authUrl}`);
     
-    // Test the login endpoint
     try {
-      console.log('Testing login endpoint...');
-      const loginResponse = await fetch('http://0.0.0.0:3000/auth/login', {
+      const loginResponse = await fetch(authUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,21 +49,28 @@ const testApiConnection = async () => {
         }),
       });
       
-      console.log('Login status:', loginResponse.status);
+      console.log(`   Login status: ${loginResponse.status}`);
       
-      if (!loginResponse.ok) {
-        console.log('Login test failed with status:', loginResponse.status);
-        console.log('Response:', await loginResponse.text());
+      const loginResponseText = await loginResponse.text();
+      console.log(`   Response body: ${loginResponseText || '(empty)'}`);
+      
+      if (loginResponseText) {
+        try {
+          const loginData = JSON.parse(loginResponseText);
+          console.log('   Parsed JSON response:', loginData);
+        } catch (jsonError) {
+          console.error('   Failed to parse JSON:', jsonError.message);
+        }
       } else {
-        const loginData = await loginResponse.json();
-        console.log('Login test successful:', loginData);
+        console.error('   Empty response received from login endpoint');
       }
     } catch (loginError) {
-      console.error('Login test error:', loginError);
+      console.error('   Login request error:', loginError.message);
     }
     
+    console.log('\nAPI testing completed');
   } catch (error) {
-    console.error('API test failed:', error);
+    console.error('Overall test failed:', error.message);
   }
 };
 

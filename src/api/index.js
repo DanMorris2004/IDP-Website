@@ -1,6 +1,6 @@
 
 // src/api/index.js
-const API_URL = '/auth';
+const API_URL = 'http://0.0.0.0:3000/auth';
 
 // Regular user authentication
 export const login = async (username, password) => {
