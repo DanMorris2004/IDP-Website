@@ -1,8 +1,8 @@
 
 import './App.css';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { adminLogin } from './api/index';
+import { useNavigate } from 'react-router-dom';
+import { adminLogin } from './api/index.js';
 
 export default function AdminLoginPage() {
   const [formData, setFormData] = useState({
@@ -27,16 +27,18 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     
     try {
+      console.log('Attempting login with:', formData.username);
       const { token, user } = await adminLogin(formData.username, formData.password);
       
       // Save token and user data to localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
-      // Redirect to admin dashboard
+      // Redirect to admin events page
       navigate('/admin/events');
     } catch (error) {
-      setError(error.message);
+      console.error('Login error:', error);
+      setError(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

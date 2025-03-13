@@ -7,8 +7,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true,
-    minlength: 3
+    trim: true
   },
   email: {
     type: String,
@@ -18,8 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
-    minlength: 6
+    required: true
   },
   isAdmin: {
     type: Boolean,
@@ -33,6 +31,7 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
+  // Only hash the password if it's modified or new
   if (!this.isModified('password')) return next();
   
   try {
@@ -44,9 +43,13 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Method to compare passwords
+// Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
 };
 
 const User = mongoose.model('User', userSchema);
