@@ -38,7 +38,7 @@ export const register = async (userData) => {
 
 // Admin Auth
 export const adminLogin = async (username, password) => {
-  const response = await fetch(`${API_URL}/auth/admin/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -51,7 +51,13 @@ export const adminLogin = async (username, password) => {
     throw new Error(error.message || 'Admin login failed');
   }
   
-  return response.json();
+  const data = await response.json();
+  
+  if (!data.user.isAdmin) {
+    throw new Error('Admin access required');
+  }
+  
+  return data;
 };
 
 export const adminRegister = async (adminData) => {

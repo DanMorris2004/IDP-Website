@@ -2,7 +2,7 @@
 import './App.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from './api';
+import { adminLogin } from './api/index';
 
 export default function AdminLoginPage() {
   const [formData, setFormData] = useState({
@@ -27,13 +27,7 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     
     try {
-      const { token, user } = await login(formData.username, formData.password);
-      
-      if (!user.isAdmin) {
-        setError('Admin access required');
-        setIsLoading(false);
-        return;
-      }
+      const { token, user } = await adminLogin(formData.username, formData.password);
       
       // Save token and user data to localStorage
       localStorage.setItem('token', token);
