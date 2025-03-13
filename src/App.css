@@ -330,8 +330,8 @@ button:hover {
   position: relative;
   left: 50%;
   right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  margin-left: -40%;
+  margin-right: -40%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -366,6 +366,7 @@ button:hover {
 .features-section {
   padding: 4rem 0;
   text-align: center;
+  
 }
 
 .features-grid {
@@ -447,8 +448,8 @@ button:hover {
   position: relative;
   left: 50%;
   right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  margin-left: -40%;
+  margin-right: -40%;
 }
 
 .testimonials-grid {
