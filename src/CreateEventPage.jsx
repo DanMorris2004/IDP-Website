@@ -1,6 +1,8 @@
 
-import './App.css'
-import { useState } from 'react'
+import './App.css';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createEvent } from './api';
 
 export default function CreateEventPage() {
   const [formData, setFormData] = useState({
@@ -10,11 +12,38 @@ export default function CreateEventPage() {
     description: '',
     image: ''
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Event data:', formData);
-    // Here you would typically send the data to your backend
+    setError('');
+    setIsLoading(true);
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to create an event');
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      await createEvent(formData, token);
+      navigate('/events');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -28,6 +57,7 @@ export default function CreateEventPage() {
   return (
     <section id="create-event">
       <h2>Create an Event</h2>
+      {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="event-form">
         <div>
           <label htmlFor="title">Event Title</label>
@@ -88,8 +118,10 @@ export default function CreateEventPage() {
           />
         </div>
 
-        <button type="submit">Create Event</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Creating Event...' : 'Create Event'}
+        </button>
       </form>
     </section>
-  )
+  );
 }
