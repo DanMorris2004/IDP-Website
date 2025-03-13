@@ -12,6 +12,7 @@ import AdminLoginPage from './AdminLoginPage';
 import AdminRegistrationPage from './AdminRegistrationPage';
 import AdminEventsPage from './AdminEventsPage';
 import './App.css';
+import './testApi.js'; // Import for console testing
 
 function App() {
   return (
