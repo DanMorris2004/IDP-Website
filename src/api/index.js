@@ -38,26 +38,48 @@ export const register = async (userData) => {
 
 // Admin Auth
 export const adminLogin = async (username, password) => {
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ username, password }),
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Admin login failed');
+  try {
+    console.log('Attempting admin login for:', username);
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    
+    if (!response.ok) {
+      // Check if response has content
+      const text = await response.text();
+      if (text) {
+        try {
+          const error = JSON.parse(text);
+          throw new Error(error.message || 'Admin login failed');
+        } catch (e) {
+          throw new Error(`Admin login failed: ${text || response.statusText}`);
+        }
+      } else {
+        throw new Error(`Admin login failed: ${response.statusText}`);
+      }
+    }
+    
+    // Check if response is empty
+    const text = await response.text();
+    if (!text) {
+      throw new Error('Received empty response from server');
+    }
+    
+    const data = JSON.parse(text);
+    
+    if (!data.user.isAdmin) {
+      throw new Error('Admin access required');
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Admin login error:', error);
+    throw error;
   }
-  
-  const data = await response.json();
-  
-  if (!data.user.isAdmin) {
-    throw new Error('Admin access required');
-  }
-  
-  return data;
 };
 
 export const adminRegister = async (adminData) => {

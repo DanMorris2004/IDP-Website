@@ -8,7 +8,8 @@
     "client": "vite",
     "server": "node server.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "create-admin": "node src/createAdminScript.js"
   },
   "keywords": [],
   "author": "",

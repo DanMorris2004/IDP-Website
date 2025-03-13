@@ -42,7 +42,11 @@ if (process.env.NODE_ENV !== 'production') {
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Failed to connect to MongoDB:', err));
+  .catch(err => {
+    console.error('Failed to connect to MongoDB:', err);
+    // Don't crash the server on MongoDB connection error
+    console.log('Server will continue but database operations will fail');
+  });
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
