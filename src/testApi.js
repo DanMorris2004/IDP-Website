@@ -1,52 +1,52 @@
 
-// Test function for API connectivity
-// Run this in the browser console to test the API
+// Test API connectivity
+import fetch from 'node-fetch';
 
-function testApiConnection() {
-  fetch('/api/test')
-    .then(response => response.json())
-    .then(data => {
-      console.log('API test successful:', data);
-    })
-    .catch(error => {
-      console.error('API test failed:', error);
-    });
-}
-
-function createTestAdmin() {
-  const adminData = {
-    username: 'admin',
-    email: 'admin@example.com',
-    password: 'admin123',
-    adminSecretKey: 'adminkey'
-  };
-
-  fetch('/api/auth/create-admin', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(adminData),
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Server returned ' + response.status);
+const testApiConnection = async () => {
+  try {
+    console.log('Testing API connection...');
+    
+    // Test the server connection
+    const testResponse = await fetch('http://0.0.0.0:3000/api/test');
+    if (!testResponse.ok) {
+      console.error('Server test failed:', testResponse.status, testResponse.statusText);
+      console.log('Response:', await testResponse.text());
+      return;
+    }
+    
+    const testData = await testResponse.json();
+    console.log('Server test response:', testData);
+    
+    // Test the login endpoint
+    try {
+      console.log('Testing login endpoint...');
+      const loginResponse = await fetch('http://0.0.0.0:3000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          username: 'admin', 
+          password: 'admin123' 
+        }),
+      });
+      
+      console.log('Login status:', loginResponse.status);
+      
+      if (!loginResponse.ok) {
+        console.log('Login test failed with status:', loginResponse.status);
+        console.log('Response:', await loginResponse.text());
+      } else {
+        const loginData = await loginResponse.json();
+        console.log('Login test successful:', loginData);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Admin created successfully:', data);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      console.log('Credentials stored in localStorage. You can now navigate to /admin/events');
-    })
-    .catch(error => {
-      console.error('Error creating admin:', error);
-    });
-}
+    } catch (loginError) {
+      console.error('Login test error:', loginError);
+    }
+    
+  } catch (error) {
+    console.error('API test failed:', error);
+  }
+};
 
-// Export the functions so they can be called from the browser console
-window.testApiConnection = testApiConnection;
-window.createTestAdmin = createTestAdmin;
-
-export { testApiConnection, createTestAdmin };
+testApiConnection();

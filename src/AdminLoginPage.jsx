@@ -1,10 +1,11 @@
 
-import './App.css';
-import { useState } from 'react';
+// src/AdminLoginPage.jsx
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminLogin } from './api';
+import './App.css';
 
-export default function AdminLoginPage() {
+const AdminLoginPage = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -29,20 +30,21 @@ export default function AdminLoginPage() {
     try {
       const { token, user } = await adminLogin(formData.username, formData.password);
       
-      // Ensure user is an admin
       if (!user.isAdmin) {
-        throw new Error('Not authorized as admin');
+        setError('You must be an admin to access this page');
+        setIsLoading(false);
+        return;
       }
       
       // Save token and user data to localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('adminToken', token);
+      localStorage.setItem('admin', JSON.stringify(user));
       
       // Redirect to admin events page
       navigate('/admin/events');
     } catch (error) {
-      console.error('Admin login error:', error);
-      setError(error.message || 'Failed to login. Please check your credentials.');
+      console.error('Admin login submission error:', error);
+      setError(error.message || 'Failed to login as admin. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -75,14 +77,17 @@ export default function AdminLoginPage() {
             required
           />
         </div>
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          className="admin-button"
-        >
-          {isLoading ? 'Logging in...' : 'Log In'}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Admin Login'}
         </button>
+        <div style={{marginTop: '1rem', textAlign: 'center'}}>
+          <p>Default admin credentials:</p>
+          <p>Username: admin</p>
+          <p>Password: admin123</p>
+        </div>
       </form>
     </section>
   );
-}
+};
+
+export default AdminLoginPage;

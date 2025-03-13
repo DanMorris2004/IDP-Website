@@ -16,13 +16,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 
-// Debug middleware
+// Extended debug middleware
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('Body:', JSON.stringify(req.body));
+  }
   next();
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ message: 'Server error', error: err.message });
 });
 
 // Routes

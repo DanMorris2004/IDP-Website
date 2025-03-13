@@ -1,96 +1,186 @@
-// Base API URL (using relative URLs)
-const API_URL = '';
 
-// Helper function for API requests
-async function apiRequest(url, method = 'GET', data = null) {
-  const options = {
-    method,
-    headers: {
-      'Content-Type': 'application/json'
+// src/api/index.js
+const API_URL = '/auth';
+
+// Regular user authentication
+export const login = async (username, password) => {
+  try {
+    console.log("Attempting login with:", username);
+    console.log("Sending login request to:", `${API_URL}/login`);
+    
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Server endpoint not found. Check server configuration.');
+      }
+      
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        console.log("Response text:", await response.text());
+        throw new Error('Server returned an invalid response');
+      }
+      
+      throw new Error(errorData.message || 'Login failed');
     }
-  };
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
 
-  // Add auth token if available
+export const register = async (username, email, password) => {
+  try {
+    const response = await fetch(`${API_URL}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Registration failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
+};
+
+// Admin authentication
+export const adminLogin = async (username, password) => {
+  try {
+    console.log("Attempting admin login with:", username);
+    const response = await fetch(`${API_URL}/admin/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        console.log("Response text:", await response.text());
+        throw new Error('Server returned an invalid response');
+      }
+      
+      throw new Error(errorData.message || 'Admin login failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Admin login error:', error);
+    throw error;
+  }
+};
+
+export const createAdmin = async (username, email, password, adminSecretKey) => {
+  try {
+    const response = await fetch(`${API_URL}/create-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password, adminSecretKey }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Admin creation failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Admin creation error:', error);
+    throw error;
+  }
+};
+
+// Events API (add more methods as needed)
+export const getEvents = async () => {
   const token = localStorage.getItem('token');
-  if (token) {
-    options.headers['Authorization'] = `Bearer ${token}`;
-  }
+  
+  try {
+    const response = await fetch('/events', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-  // Add body for non-GET requests
-  if (data && method !== 'GET') {
-    options.body = JSON.stringify(data);
-  }
-
-  console.log(`Sending ${method} request to:`, url);
-  const response = await fetch(url, options);
-
-  // For debugging
-  if (!response.ok) {
-    const responseText = await response.text();
-    console.log("Response text:", responseText);
-
-    let errorMessage;
-    try {
-      const errorData = JSON.parse(responseText);
-      errorMessage = errorData.message || 'Something went wrong';
-    } catch (e) {
-      errorMessage = responseText || 'Something went wrong';
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch events');
     }
 
-    throw new Error(errorMessage);
+    return await response.json();
+  } catch (error) {
+    console.error('Get events error:', error);
+    throw error;
   }
+};
 
-  // Check if response is empty
-  const responseText = await response.text();
-  if (!responseText) {
-    throw new Error('Empty response received from server');
+export const createEvent = async (eventData) => {
+  const token = localStorage.getItem('token');
+  
+  try {
+    const response = await fetch('/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(eventData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create event');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Create event error:', error);
+    throw error;
   }
+};
 
-  // Parse JSON response
-  return JSON.parse(responseText);
-}
+export const deleteEvent = async (eventId) => {
+  const token = localStorage.getItem('token');
+  
+  try {
+    const response = await fetch(`/events/${eventId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-// Auth functions
-export async function login(username, password) {
-  console.log("Attempting login with:", username);
-  return apiRequest('/auth/login', 'POST', { username, password });
-}
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to delete event');
+    }
 
-export async function adminLogin(username, password) {
-  console.log("Attempting admin login with:", username);
-  return apiRequest('/auth/admin/login', 'POST', { username, password });
-}
-
-export async function register(username, email, password) {
-  return apiRequest('/auth/register', 'POST', { username, email, password });
-}
-
-export async function createAdmin(username, email, password, adminSecretKey) {
-  return apiRequest('/auth/create-admin', 'POST', { 
-    username, 
-    email, 
-    password, 
-    adminSecretKey 
-  });
-}
-
-// Events functions
-export async function getEvents() {
-  return apiRequest('/events');
-}
-
-export async function getEvent(id) {
-  return apiRequest(`/events/${id}`);
-}
-
-export async function createEvent(eventData) {
-  return apiRequest('/events', 'POST', eventData);
-}
-
-export async function updateEvent(id, eventData) {
-  return apiRequest(`/events/${id}`, 'PUT', eventData);
-}
-
-export async function deleteEvent(id) {
-  return apiRequest(`/events/${id}`, 'DELETE');
-}
+    return await response.json();
+  } catch (error) {
+    console.error('Delete event error:', error);
+    throw error;
+  }
+};
