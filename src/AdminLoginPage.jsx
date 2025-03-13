@@ -2,7 +2,7 @@
 import './App.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin } from './api/index.js';
+import { adminLogin } from './api';
 
 export default function AdminLoginPage() {
   const [formData, setFormData] = useState({
@@ -27,8 +27,12 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     
     try {
-      console.log('Attempting login with:', formData.username);
       const { token, user } = await adminLogin(formData.username, formData.password);
+      
+      // Ensure user is an admin
+      if (!user.isAdmin) {
+        throw new Error('Not authorized as admin');
+      }
       
       // Save token and user data to localStorage
       localStorage.setItem('token', token);
@@ -37,9 +41,8 @@ export default function AdminLoginPage() {
       // Redirect to admin events page
       navigate('/admin/events');
     } catch (error) {
-      console.error('Login error:', error);
-      setError(typeof error === 'string' ? error : 
-               error.message || 'Login failed. Check server connection and try again.');
+      console.error('Admin login error:', error);
+      setError(error.message || 'Failed to login. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -72,8 +75,12 @@ export default function AdminLoginPage() {
             required
           />
         </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Logging in...' : 'Log In as Admin'}
+        <button 
+          type="submit" 
+          disabled={isLoading}
+          className="admin-button"
+        >
+          {isLoading ? 'Logging in...' : 'Log In'}
         </button>
       </form>
     </section>

@@ -5,31 +5,40 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Login route
-router.post('/login', async (req, res) => {
+// Register route
+router.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
     
-    // Find user by username
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({ 
+        message: 'User with that email or username already exists' 
+      });
     }
     
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    // Create new user
+    const user = new User({
+      username,
+      email,
+      password,
+      isAdmin: false
+    });
     
-    // Generate JWT token
+    await user.save();
+    
+    // Create token
     const token = jwt.sign(
-      { userId: user._id, isAdmin: user.isAdmin },
+      { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
     
-    res.json({
+    res.status(201).json({
       token,
       user: {
         id: user._id,
@@ -39,73 +48,33 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Register a new user
-router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password, isAdmin } = req.body;
-    
-    // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-    
-    // Create new user
-    const newUser = new User({ 
-      username, 
-      email, 
-      password,
-      isAdmin: isAdmin || false // Default to regular user
-    });
-    await newUser.save();
-    
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: newUser._id, isAdmin: newUser.isAdmin },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-    
-    res.status(201).json({
-      token,
-      user: {
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        isAdmin: newUser.isAdmin
-      }
-    });
-  } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-// Login user
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
     // Find user
     const user = await User.findOne({ username });
+    
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
     
     // Check password
     const isMatch = await user.comparePassword(password);
+    
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
     
-    // Generate JWT token
+    // Create token
     const token = jwt.sign(
-      { userId: user._id, isAdmin: user.isAdmin },
+      { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -121,39 +90,85 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-// Create admin user (for initial setup)
+// Admin login route
+router.post('/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    // Find user
+    const user = await User.findOne({ username });
+    
+    if (!user || !user.isAdmin) {
+      return res.status(400).json({ message: 'Invalid credentials or not an admin' });
+    }
+    
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+    
+    // Create token
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+    
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Create admin route with secret key
 router.post('/create-admin', async (req, res) => {
   try {
     const { username, email, password, adminSecretKey } = req.body;
     
     // Verify admin secret key
     if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
-      return res.status(401).json({ message: 'Not authorized to create admin' });
+      return res.status(403).json({ message: 'Invalid admin secret key' });
     }
     
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
+    });
+    
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ 
+        message: 'User with that email or username already exists' 
+      });
     }
     
     // Create new admin user
-    const adminUser = new User({ 
-      username, 
-      email, 
+    const user = new User({
+      username,
+      email,
       password,
       isAdmin: true
     });
     
-    await adminUser.save();
+    await user.save();
     
-    // Generate JWT token
+    // Create token
     const token = jwt.sign(
-      { userId: adminUser._id, isAdmin: true },
+      { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -161,15 +176,15 @@ router.post('/create-admin', async (req, res) => {
     res.status(201).json({
       token,
       user: {
-        id: adminUser._id,
-        username: adminUser.username,
-        email: adminUser.email,
-        isAdmin: true
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {
     console.error('Create admin error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
