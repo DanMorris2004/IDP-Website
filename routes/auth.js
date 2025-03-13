@@ -8,7 +8,7 @@ const router = express.Router();
 // Register a new user
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, isAdmin } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
@@ -17,12 +17,17 @@ router.post('/register', async (req, res) => {
     }
     
     // Create new user
-    const newUser = new User({ username, email, password });
+    const newUser = new User({ 
+      username, 
+      email, 
+      password,
+      isAdmin: isAdmin || false // Default to regular user
+    });
     await newUser.save();
     
     // Generate JWT token
     const token = jwt.sign(
-      { userId: newUser._id },
+      { userId: newUser._id, isAdmin: newUser.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -32,7 +37,8 @@ router.post('/register', async (req, res) => {
       user: {
         id: newUser._id,
         username: newUser.username,
-        email: newUser.email
+        email: newUser.email,
+        isAdmin: newUser.isAdmin
       }
     });
   } catch (error) {
@@ -60,7 +66,7 @@ router.post('/login', async (req, res) => {
     
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id },
+      { userId: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -70,11 +76,60 @@ router.post('/login', async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        isAdmin: user.isAdmin
       }
     });
   } catch (error) {
     console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Create admin user (for initial setup)
+router.post('/create-admin', async (req, res) => {
+  try {
+    const { username, email, password, adminSecretKey } = req.body;
+    
+    // Verify admin secret key
+    if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
+      return res.status(401).json({ message: 'Not authorized to create admin' });
+    }
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    
+    // Create new admin user
+    const adminUser = new User({ 
+      username, 
+      email, 
+      password,
+      isAdmin: true
+    });
+    
+    await adminUser.save();
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: adminUser._id, isAdmin: true },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+    
+    res.status(201).json({
+      token,
+      user: {
+        id: adminUser._id,
+        username: adminUser.username,
+        email: adminUser.email,
+        isAdmin: true
+      }
+    });
+  } catch (error) {
+    console.error('Create admin error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

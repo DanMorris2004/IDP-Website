@@ -61,8 +61,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    // Check if user owns the event
-    if (event.createdBy.toString() !== req.user.userId) {
+    // Check if user owns the event or is an admin
+    if (event.createdBy.toString() !== req.user.userId && !req.user.isAdmin) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
@@ -88,8 +88,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    // Check if user owns the event
-    if (event.createdBy.toString() !== req.user.userId) {
+    // Check if user owns the event or is an admin
+    if (event.createdBy.toString() !== req.user.userId && !req.user.isAdmin) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     

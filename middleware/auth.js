@@ -17,3 +17,11 @@ export const authenticateToken = (req, res, next) => {
     res.status(401).json({ message: 'Token is not valid' });
   }
 };
+
+// Middleware to check for admin privileges
+export const requireAdmin = (req, res, next) => {
+  if (!req.user.isAdmin) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
