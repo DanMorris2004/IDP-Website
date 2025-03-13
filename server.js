@@ -1,4 +1,3 @@
-
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -20,9 +19,15 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// Routes
+app.use('/auth', authRoutes);
+app.use('/events', eventRoutes);
 
 // Test route to verify server is working
 app.get('/api/test', (req, res) => {
@@ -33,7 +38,7 @@ app.get('/api/test', (req, res) => {
 if (process.env.NODE_ENV !== 'production') {
   // Serve static files from dist if in production
   app.use(express.static(path.join(__dirname, 'dist')));
-  
+
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });

@@ -1,6 +1,6 @@
 
 // Base API URL
-const API_URL = '/api';
+const API_URL = '';
 
 // Admin Auth
 export const adminLogin = async (username, password) => {

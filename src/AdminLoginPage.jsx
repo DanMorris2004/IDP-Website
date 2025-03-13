@@ -38,7 +38,8 @@ export default function AdminLoginPage() {
       navigate('/admin/events');
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'Login failed. Please try again.');
+      setError(typeof error === 'string' ? error : 
+               error.message || 'Login failed. Check server connection and try again.');
     } finally {
       setIsLoading(false);
     }
