@@ -1,13 +1,12 @@
-
 // src/api/index.js
-const API_URL = 'http://0.0.0.0:3000/auth';
+const API_URL = 'http://0.0.0.0:3000/api/auth';
 
 // Regular user authentication
 export const login = async (username, password) => {
   try {
     console.log("Attempting login with:", username);
     console.log("Sending login request to:", `${API_URL}/login`);
-    
+
     const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: {
@@ -15,12 +14,12 @@ export const login = async (username, password) => {
       },
       body: JSON.stringify({ username, password }),
     });
-    
+
     if (!response.ok) {
       if (response.status === 404) {
         throw new Error('Server endpoint not found. Check server configuration.');
       }
-      
+
       let errorData;
       try {
         errorData = await response.json();
@@ -28,10 +27,10 @@ export const login = async (username, password) => {
         console.log("Response text:", await response.text());
         throw new Error('Server returned an invalid response');
       }
-      
+
       throw new Error(errorData.message || 'Login failed');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Login error:', error);
@@ -81,7 +80,7 @@ export const adminLogin = async (username, password) => {
         console.log("Response text:", await response.text());
         throw new Error('Server returned an invalid response');
       }
-      
+
       throw new Error(errorData.message || 'Admin login failed');
     }
 
