@@ -1,46 +1,26 @@
 // src/api/index.js
-const API_URL = 'http://0.0.0.0:3000/api/auth';
 
-// Regular user authentication
+// API utilities
 export const login = async (username, password) => {
-  try {
-    console.log("Attempting login with:", username);
-    console.log("Sending login request to:", `${API_URL}/login`);
+  const response = await fetch('http://localhost:5000/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, password }),
+  });
 
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Server endpoint not found. Check server configuration.');
-      }
-
-      let errorData;
-      try {
-        errorData = await response.json();
-      } catch (e) {
-        console.log("Response text:", await response.text());
-        throw new Error('Server returned an invalid response');
-      }
-
-      throw new Error(errorData.message || 'Login failed');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Login failed');
   }
+
+  return response.json();
 };
 
 export const register = async (username, email, password) => {
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`http://localhost:5000/auth/register`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +44,7 @@ export const register = async (username, email, password) => {
 export const adminLogin = async (username, password) => {
   try {
     console.log("Attempting admin login with:", username);
-    const response = await fetch(`${API_URL}/admin/login`, {
+    const response = await fetch(`http://localhost:5000/auth/admin/login`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -93,7 +73,7 @@ export const adminLogin = async (username, password) => {
 
 export const createAdmin = async (username, email, password, adminSecretKey) => {
   try {
-    const response = await fetch(`${API_URL}/create-admin`, {
+    const response = await fetch(`http://localhost:5000/auth/create-admin`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -123,12 +103,12 @@ export const getEvents = async () => {
         'Authorization': `Bearer ${token}`
       }
     });
-
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch events');
     }
-
+    
     return await response.json();
   } catch (error) {
     console.error('Get events error:', error);
@@ -148,12 +128,12 @@ export const createEvent = async (eventData) => {
       },
       body: JSON.stringify(eventData),
     });
-
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create event');
     }
-
+    
     return await response.json();
   } catch (error) {
     console.error('Create event error:', error);
@@ -171,12 +151,12 @@ export const deleteEvent = async (eventId) => {
         'Authorization': `Bearer ${token}`
       }
     });
-
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to delete event');
     }
-
+    
     return await response.json();
   } catch (error) {
     console.error('Delete event error:', error);

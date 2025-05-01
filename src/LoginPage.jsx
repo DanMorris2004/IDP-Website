@@ -3,7 +3,7 @@
 import './App.css';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from './api';
+import { login } from './api/index.js';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
