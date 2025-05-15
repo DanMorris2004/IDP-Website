@@ -22,13 +22,13 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 
-// Serve static files
-app.use(express.static('dist'));
-
-// Handle SPA routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+// In development, let Vite handle static files
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('dist'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
