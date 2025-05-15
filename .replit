@@ -23,7 +23,7 @@ localPort = 5173
 externalPort = 80
 
 [workflows]
-runButton = "Run"
+runButton = "Dev"
 
 [[workflows.workflow]]
 name = "Run"
@@ -37,3 +37,16 @@ args = "npm run build"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node server.js"
+
+[[workflows.workflow]]
+name = "Dev"
+author = 37897244
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run client"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run server"

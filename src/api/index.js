@@ -93,14 +93,17 @@ export const createAdmin = async (username, email, password, adminSecretKey) => 
   }
 };
 
+const API_BASE = '/api';
+
 // Events API (add more methods as needed)
 export const getEvents = async () => {
   const token = localStorage.getItem('token');
   
   try {
-    const response = await fetch('/events', {
+    const response = await fetch(`${API_BASE}/events`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
     
