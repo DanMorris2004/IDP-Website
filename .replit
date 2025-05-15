@@ -31,7 +31,7 @@ localPort = 5174
 externalPort = 3001
 
 [workflows]
-runButton = "Dev"
+runButton = "Frontend"
 
 [[workflows.workflow]]
 name = "Run"
@@ -58,3 +58,12 @@ args = "npm run client"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run server"
+
+[[workflows.workflow]]
+name = "Frontend"
+author = 37897244
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
