@@ -1,44 +1,44 @@
 
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createEvent } from './api';
 
 export default function CreateEventPage() {
   const [formData, setFormData] = useState({
     title: '',
     date: '',
+    time: '',
     location: '',
     description: '',
-    image: ''
+    image: '',
+    status: 'pending'
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
     
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('You must be logged in to create an event');
-      setIsLoading(false);
-      return;
-    }
-    
     try {
-      await createEvent(formData, token);
-      navigate('/events');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const isAdmin = user.isAdmin;
+      
+      // For demo purposes, just storing in localStorage
+      const events = JSON.parse(localStorage.getItem('events') || '[]');
+      const newEvent = {
+        ...formData,
+        id: Date.now(),
+        status: isAdmin ? 'approved' : 'pending',
+        createdBy: user.username || 'anonymous'
+      };
+      
+      events.push(newEvent);
+      localStorage.setItem('events', JSON.stringify(events));
+      
+      navigate(isAdmin ? '/admin/events' : '/events');
     } catch (error) {
       setError(error.message);
     } finally {
@@ -78,6 +78,18 @@ export default function CreateEventPage() {
             id="date"
             name="date"
             value={formData.date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="time">Event Time</label>
+          <input
+            type="time"
+            id="time"
+            name="time"
+            value={formData.time}
             onChange={handleChange}
             required
           />

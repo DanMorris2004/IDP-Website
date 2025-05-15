@@ -5,9 +5,21 @@ import './App.css';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState([]);
+  const [pendingEvents, setPendingEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const mockPendingEvents = [
+    {
+      id: 'pending1',
+      title: "Community Workshop",
+      date: "2024-03-15",
+      description: "Workshop on sustainable living",
+      status: "pending",
+      createdBy: "user123"
+    }
+  ];
   
   const fetchEvents = async () => {
     try {
@@ -87,6 +99,44 @@ export default function AdminEventsPage() {
       
       <button onClick={handleAddEvent} className="admin-button">Add New Event</button>
       
+      <h3>Pending User Events</h3>
+      <div className="admin-event-list">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Created By</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mockPendingEvents.map(event => (
+              <tr key={event.id}>
+                <td>{event.title}</td>
+                <td>{event.date}</td>
+                <td>{event.createdBy}</td>
+                <td>
+                  <button 
+                    className="admin-button edit"
+                    onClick={() => handleApproveEvent(event.id)}
+                  >
+                    Approve
+                  </button>
+                  <button 
+                    className="admin-button delete"
+                    onClick={() => handleRejectEvent(event.id)}
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Published Events</h3>
       <div className="admin-event-list">
         <table className="admin-table">
           <thead>
