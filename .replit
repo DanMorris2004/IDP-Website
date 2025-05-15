@@ -53,8 +53,8 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run client"
+args = "npm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=5000 npm run server"
+args = "npm run server"

@@ -7,8 +7,12 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-      '/auth': 'http://localhost:5000',
-      '/api': 'http://localhost:5000'
+      '/auth': 'http://0.0.0.0:5000',
+      '/events': 'http://0.0.0.0:5000',
+      '/api': 'http://0.0.0.0:5000'
     }
+  },
+  build: {
+    outDir: 'dist'
   }
 });
