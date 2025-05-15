@@ -1,13 +1,18 @@
-// Test API connectivity
+
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const API_BASE = 'http://0.0.0.0:5000';
 
 const testApiConnection = async () => {
   try {
-    console.log('Testing API endpoints...');
+    console.log('Testing API endpoints...\n');
 
     // Test register endpoint
-    console.log('\n1. Testing user registration');
-    const registerResponse = await fetch('http://0.0.0.0:5000/auth/register', {
+    console.log('1. Testing user registration');
+    const registerResponse = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -16,11 +21,12 @@ const testApiConnection = async () => {
         password: 'test123'
       })
     });
-    console.log('Register response:', await registerResponse.json());
+    const registerData = await registerResponse.json();
+    console.log('Register response:', registerData);
 
     // Test login endpoint
     console.log('\n2. Testing user login');
-    const loginResponse = await fetch('http://0.0.0.0:5000/auth/login', {
+    const loginResponse = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -34,7 +40,7 @@ const testApiConnection = async () => {
     // Test create event endpoint
     if (loginData.token) {
       console.log('\n3. Testing event creation');
-      const eventResponse = await fetch('http://0.0.0.0:5000/events', {
+      const eventResponse = await fetch(`${API_BASE}/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +58,7 @@ const testApiConnection = async () => {
 
     // Test get events endpoint
     console.log('\n4. Testing get events');
-    const eventsResponse = await fetch('http://0.0.0.0:5000/events');
+    const eventsResponse = await fetch(`${API_BASE}/events`);
     console.log('Get events response:', await eventsResponse.json());
 
   } catch (error) {
