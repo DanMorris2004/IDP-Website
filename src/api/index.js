@@ -1,4 +1,5 @@
 
+// API Base URL
 const API_BASE = '/api';
 
 // Events API
@@ -14,8 +15,7 @@ export const getEvents = async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch events');
+      throw new Error('Failed to fetch events');
     }
 
     return await response.json();
@@ -39,8 +39,7 @@ export const createEvent = async (eventData) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create event');
+      throw new Error('Failed to create event');
     }
 
     return await response.json();
@@ -62,8 +61,7 @@ export const deleteEvent = async (eventId) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to delete event');
+      throw new Error('Failed to delete event');
     }
 
     return await response.json();
@@ -73,7 +71,6 @@ export const deleteEvent = async (eventId) => {
   }
 };
 
-// Auth API
 export const login = async (username, password) => {
   try {
     const response = await fetch(`${API_BASE}/auth/login`, {
@@ -85,8 +82,7 @@ export const login = async (username, password) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
+      throw new Error('Login failed');
     }
 
     return await response.json();
@@ -107,8 +103,7 @@ export const register = async (username, email, password) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Registration failed');
+      throw new Error('Registration failed');
     }
 
     return await response.json();
@@ -118,10 +113,8 @@ export const register = async (username, email, password) => {
   }
 };
 
-// Admin authentication
 export const adminLogin = async (username, password) => {
   try {
-    console.log("Attempting admin login with:", username);
     const response = await fetch(`${API_BASE}/auth/admin/login`, {
       method: 'POST',
       headers: {
@@ -131,15 +124,7 @@ export const adminLogin = async (username, password) => {
     });
 
     if (!response.ok) {
-      let errorData;
-      try {
-        errorData = await response.json();
-      } catch (e) {
-        console.log("Response text:", await response.text());
-        throw new Error('Server returned an invalid response');
-      }
-
-      throw new Error(errorData.message || 'Admin login failed');
+      throw new Error('Admin login failed');
     }
 
     return await response.json();
@@ -160,8 +145,7 @@ export const createAdmin = async (username, email, password, adminSecretKey) => 
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Admin creation failed');
+      throw new Error('Admin creation failed');
     }
 
     return await response.json();
