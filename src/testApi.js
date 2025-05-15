@@ -3,73 +3,60 @@ import fetch from 'node-fetch';
 
 const testApiConnection = async () => {
   try {
-    console.log('Testing API connection...');
-    
-    // Test the server connection with more detailed logging
-    console.log('1. Testing basic server connection');
-    const serverUrl = 'http://0.0.0.0:3000/api/test';
-    console.log(`   Sending request to: ${serverUrl}`);
-    
-    try {
-      const testResponse = await fetch(serverUrl);
-      console.log(`   Response status: ${testResponse.status}`);
-      
-      const responseText = await testResponse.text();
-      console.log(`   Response body: ${responseText}`);
-      
-      if (responseText) {
-        try {
-          const testData = JSON.parse(responseText);
-          console.log('   Parsed JSON response:', testData);
-        } catch (jsonError) {
-          console.error('   Failed to parse JSON:', jsonError.message);
-        }
-      } else {
-        console.error('   Empty response received');
-      }
-    } catch (serverError) {
-      console.error('   Server connection error:', serverError.message);
-    }
-    
-    // Test the auth endpoint
-    console.log('\n2. Testing auth endpoint');
-    const authUrl = 'http://0.0.0.0:3000/auth/login';
-    console.log(`   Sending request to: ${authUrl}`);
-    
-    try {
-      const loginResponse = await fetch(authUrl, {
+    console.log('Testing API endpoints...');
+
+    // Test register endpoint
+    console.log('\n1. Testing user registration');
+    const registerResponse = await fetch('http://0.0.0.0:5000/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'test123'
+      })
+    });
+    console.log('Register response:', await registerResponse.json());
+
+    // Test login endpoint
+    console.log('\n2. Testing user login');
+    const loginResponse = await fetch('http://0.0.0.0:5000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'testuser',
+        password: 'test123'
+      })
+    });
+    const loginData = await loginResponse.json();
+    console.log('Login response:', loginData);
+
+    // Test create event endpoint
+    if (loginData.token) {
+      console.log('\n3. Testing event creation');
+      const eventResponse = await fetch('http://0.0.0.0:5000/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${loginData.token}`
         },
-        body: JSON.stringify({ 
-          username: 'admin', 
-          password: 'admin123' 
-        }),
+        body: JSON.stringify({
+          title: 'Test Event',
+          date: new Date(),
+          location: 'Test Location',
+          description: 'Test Description'
+        })
       });
-      
-      console.log(`   Login status: ${loginResponse.status}`);
-      
-      const loginResponseText = await loginResponse.text();
-      console.log(`   Response body: ${loginResponseText || '(empty)'}`);
-      
-      if (loginResponseText) {
-        try {
-          const loginData = JSON.parse(loginResponseText);
-          console.log('   Parsed JSON response:', loginData);
-        } catch (jsonError) {
-          console.error('   Failed to parse JSON:', jsonError.message);
-        }
-      } else {
-        console.error('   Empty response received from login endpoint');
-      }
-    } catch (loginError) {
-      console.error('   Login request error:', loginError.message);
+      console.log('Create event response:', await eventResponse.json());
     }
-    
-    console.log('\nAPI testing completed');
+
+    // Test get events endpoint
+    console.log('\n4. Testing get events');
+    const eventsResponse = await fetch('http://0.0.0.0:5000/events');
+    console.log('Get events response:', await eventsResponse.json());
+
   } catch (error) {
-    console.error('Overall test failed:', error.message);
+    console.error('Test failed:', error);
   }
 };
 

@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import eventRoutes from './routes/events.js';
+import commentRoutes from './routes/comments.js';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -21,6 +22,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
+app.use('/comments', commentRoutes);
 
 // In development, let Vite handle static files
 if (process.env.NODE_ENV === 'production') {
