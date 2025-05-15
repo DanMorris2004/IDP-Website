@@ -3,15 +3,6 @@ import './App.css'
 import { useState, useEffect } from 'react';
 
 export default function EventsPage() {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    // Load events from localStorage
-    const savedEvents = JSON.parse(localStorage.getItem('events') || '[]');
-    const approvedEvents = savedEvents.filter(event => event.status === 'approved');
-    setEvents(approvedEvents);
-  }, []);
-
   const mockEvents = [
     {
       id: 1,
@@ -34,7 +25,16 @@ export default function EventsPage() {
       image: "https://picsum.photos/id/242/300/200",
       description: "Showcasing local artists' work"
     }
-  ]);
+  ];
+
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    // Load events from localStorage
+    const savedEvents = JSON.parse(localStorage.getItem('events') || '[]');
+    const approvedEvents = savedEvents.filter(event => event.status === 'approved');
+    setEvents(approvedEvents);
+  }, []);
 
   const [rsvpEvents, setRsvpEvents] = useState([]);
 
