@@ -32,8 +32,8 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node server.js"
+args = "npm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run client"
+args = "node server.js"
