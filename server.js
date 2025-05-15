@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
@@ -20,12 +21,16 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 
-// Serve static files from dist directory
+// Serve static files from dist directory if it exists
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Handle SPA routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    return res.status(500).send('Application not built yet. Please wait for build to complete.');
+  }
+  res.sendFile(indexPath);
 });
 
 // Connect to MongoDB
