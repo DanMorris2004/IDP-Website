@@ -194,6 +194,15 @@ section {
 .event-button {
   width: 100%;
   margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+.event-button.rsvp-active {
+  background-color: #27ae60;
+}
+
+.event-button.rsvp-active:hover {
+  background-color: #219a52;
 }
 
 .event-form {

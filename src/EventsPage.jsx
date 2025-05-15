@@ -1,8 +1,9 @@
 
 import './App.css'
+import { useState, useEffect } from 'react';
 
 export default function EventsPage() {
-  const events = [
+  const [events, setEvents] = useState([
     {
       id: 1,
       title: "Summer Music Festival",
@@ -24,7 +25,25 @@ export default function EventsPage() {
       image: "https://picsum.photos/id/242/300/200",
       description: "Showcasing local artists' work"
     }
-  ];
+  ]);
+
+  const [rsvpEvents, setRsvpEvents] = useState([]);
+
+  useEffect(() => {
+    const savedRsvps = localStorage.getItem('rsvpEvents');
+    if (savedRsvps) {
+      setRsvpEvents(JSON.parse(savedRsvps));
+    }
+  }, []);
+
+  const handleRSVP = (eventId) => {
+    const updatedRsvps = rsvpEvents.includes(eventId)
+      ? rsvpEvents.filter(id => id !== eventId)
+      : [...rsvpEvents, eventId];
+    
+    setRsvpEvents(updatedRsvps);
+    localStorage.setItem('rsvpEvents', JSON.stringify(updatedRsvps));
+  };
 
   return (
     <section id="events">
@@ -37,11 +56,16 @@ export default function EventsPage() {
               <h3>{event.title}</h3>
               <p className="event-date">{event.date}</p>
               <p>{event.description}</p>
-              <button className="event-button">View Details</button>
+              <button 
+                className={`event-button ${rsvpEvents.includes(event.id) ? 'rsvp-active' : ''}`}
+                onClick={() => handleRSVP(event.id)}
+              >
+                {rsvpEvents.includes(event.id) ? 'Cancel RSVP' : 'RSVP'}
+              </button>
             </div>
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }
