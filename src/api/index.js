@@ -2,7 +2,7 @@
 
 // API utilities
 export const login = async (username, password) => {
-  const response = await fetch('http://0.0.0.0:5000/auth/login', {
+  const response = await fetch('/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ export const login = async (username, password) => {
 
 export const register = async (username, email, password) => {
   try {
-    const response = await fetch(`http://localhost:5000/auth/register`, { //Updated URL
+    const response = await fetch(`/auth/register`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export const register = async (username, email, password) => {
 export const adminLogin = async (username, password) => {
   try {
     console.log("Attempting admin login with:", username);
-    const response = await fetch(`http://localhost:5000/auth/admin/login`, { //Updated URL
+    const response = await fetch(`/auth/admin/login`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export const adminLogin = async (username, password) => {
 
 export const createAdmin = async (username, email, password, adminSecretKey) => {
   try {
-    const response = await fetch(`http://localhost:5000/auth/create-admin`, { //Updated URL
+    const response = await fetch(`/auth/create-admin`, { //Updated URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ const API_BASE = '/api';
 // Events API (add more methods as needed)
 export const getEvents = async () => {
   const token = localStorage.getItem('token');
-  
+
   try {
     const response = await fetch(`${API_BASE}/events`, {
       headers: {
@@ -106,12 +106,12 @@ export const getEvents = async () => {
         'Content-Type': 'application/json'
       }
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch events');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Get events error:', error);
@@ -121,7 +121,7 @@ export const getEvents = async () => {
 
 export const createEvent = async (eventData) => {
   const token = localStorage.getItem('token');
-  
+
   try {
     const response = await fetch('/events', {
       method: 'POST',
@@ -131,12 +131,12 @@ export const createEvent = async (eventData) => {
       },
       body: JSON.stringify(eventData),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create event');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Create event error:', error);
@@ -146,7 +146,7 @@ export const createEvent = async (eventData) => {
 
 export const deleteEvent = async (eventId) => {
   const token = localStorage.getItem('token');
-  
+
   try {
     const response = await fetch(`/events/${eventId}`, {
       method: 'DELETE',
@@ -154,12 +154,12 @@ export const deleteEvent = async (eventId) => {
         'Authorization': `Bearer ${token}`
       }
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to delete event');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Delete event error:', error);
