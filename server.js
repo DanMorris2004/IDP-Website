@@ -1,6 +1,6 @@
+
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
@@ -14,6 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -21,16 +22,12 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/events', eventRoutes);
 
-// Serve static files from dist directory if it exists
-app.use(express.static(path.join(__dirname, 'dist')));
+// Serve static files
+app.use(express.static('dist'));
 
 // Handle SPA routing
 app.get('*', (req, res) => {
-  const indexPath = path.join(__dirname, 'dist', 'index.html');
-  if (!fs.existsSync(indexPath)) {
-    return res.status(500).send('Application not built yet. Please wait for build to complete.');
-  }
-  res.sendFile(indexPath);
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Connect to MongoDB

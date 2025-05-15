@@ -1,23 +1,9 @@
+const API_BASE = '';
 
-// API Base URL
-const API_BASE = '/api';
-
-// Events API
 export const getEvents = async () => {
-  const token = localStorage.getItem('token');
-
   try {
-    const response = await fetch(`${API_BASE}/events`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch events');
-    }
-
+    const response = await fetch(`${API_BASE}/events`);
+    if (!response.ok) throw new Error('Failed to fetch events');
     return await response.json();
   } catch (error) {
     console.error('Get events error:', error);
@@ -25,9 +11,7 @@ export const getEvents = async () => {
   }
 };
 
-export const createEvent = async (eventData) => {
-  const token = localStorage.getItem('token');
-
+export const createEvent = async (eventData, token) => {
   try {
     const response = await fetch(`${API_BASE}/events`, {
       method: 'POST',
@@ -35,13 +19,10 @@ export const createEvent = async (eventData) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(eventData),
+      body: JSON.stringify(eventData)
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create event');
-    }
-
+    if (!response.ok) throw new Error('Failed to create event');
     return await response.json();
   } catch (error) {
     console.error('Create event error:', error);
@@ -49,9 +30,7 @@ export const createEvent = async (eventData) => {
   }
 };
 
-export const deleteEvent = async (eventId) => {
-  const token = localStorage.getItem('token');
-
+export const deleteEvent = async (eventId, token) => {
   try {
     const response = await fetch(`${API_BASE}/events/${eventId}`, {
       method: 'DELETE',
@@ -60,10 +39,7 @@ export const deleteEvent = async (eventId) => {
       }
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete event');
-    }
-
+    if (!response.ok) throw new Error('Failed to delete event');
     return await response.json();
   } catch (error) {
     console.error('Delete event error:', error);
@@ -81,10 +57,7 @@ export const login = async (username, password) => {
       body: JSON.stringify({ username, password })
     });
 
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
-
+    if (!response.ok) throw new Error('Login failed');
     return await response.json();
   } catch (error) {
     console.error('Login error:', error);
@@ -102,10 +75,7 @@ export const register = async (username, email, password) => {
       body: JSON.stringify({ username, email, password }),
     });
 
-    if (!response.ok) {
-      throw new Error('Registration failed');
-    }
-
+    if (!response.ok) throw new Error('Registration failed');
     return await response.json();
   } catch (error) {
     console.error('Registration error:', error);
@@ -123,10 +93,7 @@ export const adminLogin = async (username, password) => {
       body: JSON.stringify({ username, password }),
     });
 
-    if (!response.ok) {
-      throw new Error('Admin login failed');
-    }
-
+    if (!response.ok) throw new Error('Admin login failed');
     return await response.json();
   } catch (error) {
     console.error('Admin login error:', error);
@@ -144,10 +111,7 @@ export const createAdmin = async (username, email, password, adminSecretKey) => 
       body: JSON.stringify({ username, email, password, adminSecretKey }),
     });
 
-    if (!response.ok) {
-      throw new Error('Admin creation failed');
-    }
-
+    if (!response.ok) throw new Error('Admin creation failed');
     return await response.json();
   } catch (error) {
     console.error('Admin creation error:', error);
